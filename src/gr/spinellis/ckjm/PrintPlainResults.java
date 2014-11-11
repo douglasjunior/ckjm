@@ -19,16 +19,17 @@ import java.io.PrintStream;
 
 /**
  * Simple plain text output formatter
+ * 
  * @author Julien Rentrop
  */
 public class PrintPlainResults implements CkjmOutputHandler {
-    private PrintStream p;
+	private PrintStream p;
 
-    public PrintPlainResults (PrintStream p) {
-        this.p = p;
-    }
+	public PrintPlainResults(PrintStream p) {
+		this.p = p;
+	}
 
-    public void handleClass(String name, ClassMetrics c) {
-        p.println(name + " " + c.toString());
-    }
+	public void handleClass(String name, ClassMetrics c) {
+		p.println(c.getPkage() + ";" + name + ";" + c.toString());
+	}
 }
