@@ -3,30 +3,44 @@ package gr.spinellis.ckjm;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
 public class Main {
+
+	private static File path;
+	private static String[] basePkgs;
+
 	public static void main(String[] args) throws IOException {
+		args = new String[] {
+				"C:/workspace/osmand/OsmAnd/bin/classes;"
+				+ "C:/workspace/osmand/OsmAnd-java/bin;"
+				+ "C:/workspace/osmand/plugins/OsmAnd-AddressPlugin/bin/classes;"
+				+ "C:/workspace/osmand/plugins/OsmAnd-ParkingPlugin/bin/classes;"
+				+ "C:/workspace/osmand/plugins/OsmAnd-SRTMPlugin/bin/classes;"
+				+ "C:/workspace/osmand/SherlockBar/bin/classes",
+				"net.osmand" };
+		String[] paths = args[0].split(";");
 
-		final File path = new File(args[0]);
-		final String basePkg = args[1];
+		path = new File(paths[0]);
+		basePkgs = args[1].split(";");
 
-		ClassPathHacker.addFile(path);
+		for (String p : paths)
+			ClassPathHacker.addFile(p);
 
 		ClassMetricsContainer cm = new ClassMetricsContainer();
 
-		for (File file : path.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				return arg1.equals(basePkg);
-			}
-		})) {
+		for (File file : path.listFiles()) {
 			processFile(cm, file);
 		}
 
-		CkjmOutputHandler handler = new PrintPlainResults(System.out);
+		PrintStream ps = new PrintStream(new File("c:/Users/Douglas/ckjm-results.csv"));		
+		
+		CkjmOutputHandler handler = new PrintPlainResults(ps);
+		
 		cm.printMetrics(handler);
 	}
 
@@ -46,26 +60,25 @@ public class Main {
 		int spc;
 		JavaClass jc = null;
 
-		if ((spc = clspec.indexOf(' ')) != -1) {
-			String jar = clspec.substring(0, spc);
-			clspec = clspec.substring(spc + 1);
-			try {
-				jc = new ClassParser(jar, clspec).parse();
-			} catch (IOException e) {
-				System.err.println("Error loading " + clspec + " from " + jar
-						+ ": " + e);
-			}
-		} else {
-			try {
-				jc = new ClassParser(clspec).parse();
-			} catch (IOException e) {
-				System.err.println("Error loading " + clspec + ": " + e);
-			}
+		try {
+			jc = new ClassParser(clspec).parse();
+		} catch (IOException e) {
+			System.err.println("Error loading " + clspec + ": " + e);
 		}
+
 		if (jc != null) {
-			ClassVisitor visitor = new ClassVisitor(jc, cm);
-			visitor.start();
-			visitor.end();
+			boolean contains = false;
+			for (String pkg : basePkgs) {
+				if (jc.getPackageName().startsWith(pkg)) {
+					contains = true;
+					break;
+				}
+			}
+			if (contains) {
+				ClassVisitor visitor = new ClassVisitor(jc, cm);
+				visitor.start();
+				visitor.end();
+			}
 		}
 	}
 }
