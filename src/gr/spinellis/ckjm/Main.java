@@ -17,11 +17,11 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		args = new String[] {
 				"C:/workspace/osmand/OsmAnd/bin/classes;"
-				+ "C:/workspace/osmand/OsmAnd-java/bin;"
-				+ "C:/workspace/osmand/plugins/OsmAnd-AddressPlugin/bin/classes;"
-				+ "C:/workspace/osmand/plugins/OsmAnd-ParkingPlugin/bin/classes;"
-				+ "C:/workspace/osmand/plugins/OsmAnd-SRTMPlugin/bin/classes;"
-				+ "C:/workspace/osmand/SherlockBar/bin/classes",
+						+ "C:/workspace/osmand/OsmAnd-java/bin;"
+						+ "C:/workspace/osmand/plugins/OsmAnd-AddressPlugin/bin/classes;"
+						+ "C:/workspace/osmand/plugins/OsmAnd-ParkingPlugin/bin/classes;"
+						+ "C:/workspace/osmand/plugins/OsmAnd-SRTMPlugin/bin/classes;"
+						+ "C:/workspace/osmand/SherlockBar/bin/classes",
 				"net.osmand" };
 		String[] paths = args[0].split(";");
 
@@ -32,16 +32,27 @@ public class Main {
 			ClassPathHacker.addFile(p);
 
 		ClassMetricsContainer cm = new ClassMetricsContainer();
-
+		
+		System.out.println("Processando classes e gerando métricas...");
 		for (File file : path.listFiles()) {
 			processFile(cm, file);
 		}
 
-		PrintStream ps = new PrintStream(new File("c:/Users/Douglas/ckjm-results.csv"));		
-		
+		System.out.println("Escrevendo arquivo de saida por classes...");
+		PrintStream ps = new PrintStream(new File("c:/temp/ckjm-results.csv"));
+
 		CkjmOutputHandler handler = new PrintPlainResults(ps);
-		
+
 		cm.printMetrics(handler);
+
+		System.out.println("Escrevendo arquivo de saida por pacotes...");
+		ps = new PrintStream(new File("c:/temp/ckjm-results-pkg.csv"));
+
+		handler = new PrintPlainResults(ps);
+
+		cm.printMetricsByPkg(handler);
+		
+		System.out.println("Concluido.");
 	}
 
 	private static void processFile(ClassMetricsContainer cm, File file) {

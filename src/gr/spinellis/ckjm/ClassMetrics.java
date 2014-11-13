@@ -187,4 +187,17 @@ public class ClassMetrics {
 		this.pkage = pkage;
 	}
 
+	public void setWmc(int wmc) {
+		this.wmc = wmc;
+	}
+
+	public void setNoc(int noc) {
+		this.noc = noc;
+	}
+
+	public void setNpm(int npm) {
+		this.npm = npm;
+	}
+
+	
 }

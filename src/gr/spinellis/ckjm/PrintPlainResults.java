@@ -32,4 +32,9 @@ public class PrintPlainResults implements CkjmOutputHandler {
 	public void handleClass(String name, ClassMetrics c) {
 		p.println(c.getPkage() + ";" + name + ";" + c.toString());
 	}
+
+	@Override
+	public void handleLine(String line) {
+		p.println(line);
+	}
 }

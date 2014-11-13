@@ -33,4 +33,6 @@ public interface CkjmOutputHandler {
 	 *            Value object that contains the corresponding metrics
 	 */
 	void handleClass(String name, ClassMetrics c);
+
+	void handleLine(String line);
 }
