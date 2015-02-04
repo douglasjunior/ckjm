@@ -96,6 +96,7 @@ public class ClassVisitor extends org.apache.bcel.classfile.EmptyVisitor {
 			cm.setDit(jc.getSuperClasses().length);
 		} catch (ClassNotFoundException ex) {
 			ex.printStackTrace();
+			cmap.addClassNotFound(ex.getLocalizedMessage());
 			System.err.println("Error obtaining all superclasses of " + jc);
 		}
 		registerCoupling(super_name);

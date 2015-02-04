@@ -17,6 +17,7 @@ package gr.spinellis.ckjm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import org.apache.bcel.classfile.JavaClass;
  */
 class ClassMetricsContainer {
 
+	private Set<String> classesNotFound = new HashSet<String>();
+	
 	/** The map from class names to the corresponding metrics */
 	private HashMap<String, ClassMetrics> m = new HashMap<String, ClassMetrics>();
 
@@ -46,6 +49,10 @@ class ClassMetricsContainer {
 			m.put(jc.getClassName(), cm);
 		}
 		return cm;
+	}
+	
+	public void addClassNotFound(String message){
+		classesNotFound.add(message);
 	}
 
 	/** Print the metrics of all the visited classes. */
@@ -119,6 +126,12 @@ class ClassMetricsContainer {
 			Collections.sort(values);
 			npm = median(values);
 			handler.handleLine(pkg + ";" + wmc + ";" + dit + ";" + noc + ";" + cbo + ";" + rfc + ";" + lcom + ";" + ca + ";" + npm);
+		}
+	}
+	
+	public void printClassNotFound(CkjmOutputHandler handler) {
+		for(String message : classesNotFound){
+			handler.handleLine(message);
 		}
 	}
 
